@@ -1,0 +1,6 @@
+pyaudio
+openai
+pygame
+SpeechRecognition
+numpy
+sounddevice

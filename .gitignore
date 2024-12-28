@@ -1,0 +1,4 @@
+.env
+/personas
+__pycache__
+audio/*
