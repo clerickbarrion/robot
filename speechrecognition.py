@@ -16,7 +16,7 @@ def audio_callback(indata, frames, time, status):
     rms = np.sqrt(np.mean(indata ** 2))
     print(rms)
     # Define a threshold value to detect audio
-    threshold = 0.04
+    threshold = 0.03
     
     if rms > threshold:
         print("Audio detected from the application!")
