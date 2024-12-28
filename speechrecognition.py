@@ -37,7 +37,7 @@ def process_audio_buffer():
     recognizer = sr.Recognizer()
     audio_source = sr.AudioData(stacked_audio.tobytes(), sample_rate=sample_rate, sample_width=2)
     
-    audio_file = f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    audio_file = f"audio/{datetime.now().strftime('%Y%m%d%H%M%S')}"
     
     try:
         text = recognizer.recognize_google(audio_source)

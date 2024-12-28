@@ -2,9 +2,9 @@ import pygame
 
 pygame.mixer.init()
 
-def sound(now):
+def sound(audio_file):
   print("playing sound")
-  pygame.mixer.music.load(f"{now}.mp3")
+  pygame.mixer.music.load(f"{audio_file}.mp3")
   pygame.mixer.music.play()
   while pygame.mixer.music.get_busy():
       pygame.time.Clock().tick(10)

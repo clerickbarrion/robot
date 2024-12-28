@@ -32,7 +32,7 @@ def send_message(message, audio_file, audio=False):
         model="tts-1",
         voice="nova",
         input=response.choices[0].message.content
-        ).stream_to_file(f"audio/{audio_file}.mp3")
+        ).stream_to_file(f"{audio_file}.mp3")
 
     return response.choices[0].message.content
 
