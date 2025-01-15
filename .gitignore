@@ -2,3 +2,4 @@
 /personas
 __pycache__
 audio/*
+!audio/
