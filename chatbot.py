@@ -40,7 +40,6 @@ def send_message(message, audio_file, audio=False):
     if audio:
         if response.startswith("~action~"):
             response = action(response)
-        response = action(response)
         client.audio.speech.create(
         model="tts-1",
         voice="nova",
