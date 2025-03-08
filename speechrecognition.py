@@ -6,6 +6,7 @@ import speechify
 from audiolist import get_first_input_device
 from datetime import datetime
 import serial
+import os
 arduino = serial.Serial(port="COM3", baudrate=9600, timeout=1)
 
 
@@ -47,6 +48,7 @@ def process_audio_buffer():
         print("Recognized text:", text)
         print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
         speechify.sound(audio_file)
+        os.remove(f"{audio_file}.mp3")
     except sr.UnknownValueError:
         print("Speech recognition could not understand audio")
 

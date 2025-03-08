@@ -1,9 +1,9 @@
-import serial
 from time import sleep
 
 def action(action, arduino):
     
     def send_command(command):
+        command += "\n"
         arduino.write(command.encode())
         sleep(0.1)
         return command
@@ -21,7 +21,9 @@ def action(action, arduino):
             return send_command("turn_left")
         case "turn_right":
             return send_command("turn_right")
-        case "stop_moving":
-            return send_command("stop_moving")
+        # case "stop_moving":
+        #     return send_command("stop_moving")
+        case "shake_head":
+            return send_command("shake_head")
         case _:
             return "I'm sorry, I don't understand that action."

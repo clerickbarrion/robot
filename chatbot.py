@@ -1,6 +1,7 @@
 from openai import OpenAI
 from datetime import datetime
 from actions import action
+import re
 
 with open(".env", "r") as file:
     api_key = file.read().strip()
@@ -21,11 +22,11 @@ def send_message(message, audio_file, audio=False, arduino=None):
         {history}
         --
         Your primary goal is to chat with the user.
-        If you interpret the user to be giving you a command, respond only with the following and nothing else:
-        ~action~ACTION_NAME
+        If you interpret the user to be giving you a command, respond like so:
+        ~action~ACTION_NAME The rest of your response here
         
         For example, the user says "Please clear the chat history" you respond with:
-        ~action~clear_history
+        ~action~clear_history Okay, I have cleared the chat history.
         
         Currently, the following actions are supported:
         ~action~clear_history
@@ -34,6 +35,7 @@ def send_message(message, audio_file, audio=False, arduino=None):
         ~action~turn_left
         ~action~turn_right
         ~action~stop_moving
+        ~action~shake_head
         '''},
         {"role": "user", "content": message}
     ],
@@ -43,19 +45,25 @@ def send_message(message, audio_file, audio=False, arduino=None):
     file.write(f"User: {message}\n")
     file.write(f"BMO: {response}\n")
     file.close()
-    if audio:
-        if response.startswith("~action~"):
-            response = action(response, arduino)
-        client.audio.speech.create(
-        model="tts-1",
-        voice="nova",
-        input=response
-        ).stream_to_file(f"{audio_file}.mp3")
+    if response.startswith("~action~"):
+        match = re.match(r"(~action~\w+)\s*(.*)", response)
+        if match:
+            response = [match.group(1), match.group(2)]
+        print(response)
+        action(response[0], arduino)
+        if audio:
+            client.audio.speech.create(
+            model="tts-1",
+            voice="nova",
+            input=response[1]
+            ).stream_to_file(f"{audio_file}.mp3")
 
-    return response
+    return response[1]
 
 if __name__ == "__main__":
+    import serial
+    arduino = serial.Serial(port="COM3", baudrate=9600, timeout=1)
     while True:
-        audio_file = f"{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        audio_file = f"audio/{datetime.now().strftime('%Y%m%d%H%M%S')}"
         message = input("You: ")
-        print("BMO:",send_message(message, audio_file))
+        print("BMO:",send_message(message, audio_file, arduino=arduino))
