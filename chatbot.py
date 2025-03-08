@@ -3,7 +3,7 @@ from datetime import datetime
 from actions import action
 
 with open(".env", "r") as file:
-    api_key = file.read()
+    api_key = file.read().strip()
 
 client = OpenAI(api_key=api_key)
 
