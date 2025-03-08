@@ -45,20 +45,19 @@ def send_message(message, audio_file, audio=False, arduino=None):
     file.write(f"User: {message}\n")
     file.write(f"BMO: {response}\n")
     file.close()
-    if response.startswith("~action~"):
-        match = re.match(r"(~action~\w+)\s*(.*)", response)
-        if match:
-            response = [match.group(1), match.group(2)]
-        print(response)
-        action(response[0], arduino)
-        if audio:
+    if audio:
             client.audio.speech.create(
             model="tts-1",
             voice="nova",
             input=response[1]
             ).stream_to_file(f"{audio_file}.mp3")
+    if response.startswith("~action~"):
+        match = re.match(r"(~action~\w+)\s*(.*)", response)
+        if match:
+            response = [match.group(1), match.group(2)]
+        action(response[0], arduino)
 
-    return response[1]
+    return response[1] or response
 
 if __name__ == "__main__":
     import serial
