@@ -5,6 +5,9 @@ import chatbot
 import speechify
 from audiolist import get_first_input_device
 from datetime import datetime
+import serial
+arduino = serial.Serial(port="COM3", baudrate=9600, timeout=1)
+
 
 audio_buffer = []  # Initialize an empty audio buffer
 audio = True
@@ -16,7 +19,7 @@ def audio_callback(indata, frames, time, status):
     rms = np.sqrt(np.mean(indata ** 2))
     print(rms)
     # Define a threshold value to detect audio
-    threshold = 0.03
+    threshold = 0.05
     
     if rms > threshold:
         print("Audio detected from the application!")
@@ -42,7 +45,7 @@ def process_audio_buffer():
     try:
         text = recognizer.recognize_google(audio_source)
         print("Recognized text:", text)
-        print(chatbot.send_message(text, audio_file, audio=audio))
+        print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
         speechify.sound(audio_file)
     except sr.UnknownValueError:
         print("Speech recognition could not understand audio")

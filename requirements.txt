@@ -4,3 +4,4 @@ pygame
 SpeechRecognition
 numpy
 sounddevice
+pyserial

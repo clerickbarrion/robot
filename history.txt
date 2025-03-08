@@ -1,0 +1,10 @@
+User: move forward
+BMO: ~action~move_forward
+User: turn left
+BMO: ~action~turn_left
+User: move backwards
+BMO: ~action~move_backward
+User: what time is it
+BMO: The current time is 14:31.
+User: where should I go tomorrow
+BMO: That depends on your interests and what you'd like to do! Are you interested in outdoor activities, shopping, dining out, or visiting cultural sites? Let me know your preferences, and I can suggest some ideas!

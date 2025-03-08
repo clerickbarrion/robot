@@ -28,4 +28,4 @@ def get_first_input_device():
     p.terminate()
 
 if __name__ == "__main__":
-    get_first_input_device()
+    print(get_first_input_device())

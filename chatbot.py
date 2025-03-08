@@ -7,7 +7,7 @@ with open(".env", "r") as file:
 
 client = OpenAI(api_key=api_key)
 
-def send_message(message, audio_file, audio=False):
+def send_message(message, audio_file, audio=False, arduino=None):
     file = open("./history.txt", "r")
     history = file.readlines()
     file.close()
@@ -20,6 +20,7 @@ def send_message(message, audio_file, audio=False):
         --
         {history}
         --
+        Your primary goal is to chat with the user.
         If you interpret the user to be giving you a command, respond only with the following and nothing else:
         ~action~ACTION_NAME
         
@@ -28,6 +29,11 @@ def send_message(message, audio_file, audio=False):
         
         Currently, the following actions are supported:
         ~action~clear_history
+        ~action~move_forward
+        ~action~move_backward
+        ~action~turn_left
+        ~action~turn_right
+        ~action~stop_moving
         '''},
         {"role": "user", "content": message}
     ],
@@ -39,7 +45,7 @@ def send_message(message, audio_file, audio=False):
     file.close()
     if audio:
         if response.startswith("~action~"):
-            response = action(response)
+            response = action(response, arduino)
         client.audio.speech.create(
         model="tts-1",
         voice="nova",
