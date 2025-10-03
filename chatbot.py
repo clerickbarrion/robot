@@ -64,7 +64,7 @@ def send_message(message, audio_file, audio=False, arduino=None):
 
 if __name__ == "__main__":
     import serial
-    arduino = serial.Serial(port="COM3", baudrate=9600, timeout=1)
+    arduino = serial.Serial(port="/dev/ttyACM0", baudrate=9600, timeout=1)
     while True:
         audio_file = f"audio/{datetime.now().strftime('%Y%m%d%H%M%S')}"
         message = input("You: ")
