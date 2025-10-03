@@ -22,6 +22,7 @@ def send_message(message, audio_file, audio=False, arduino=None):
         {history}
         --
         Your primary goal is to chat with the user.
+        Keep your responses at a maximum of 4 sentences.
         If you interpret the user to be giving you a command, respond like so:
         ~action~ACTION_NAME The rest of your response here
         
