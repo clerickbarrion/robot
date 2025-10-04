@@ -46,6 +46,8 @@ def process_audio_buffer():
     try:
         text = recognizer.recognize_google(audio_source)
         print("Recognized text:", text)
+        if "BMO" not in text:
+            return
         print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
         speechify.sound(audio_file)
         os.remove(f"{audio_file}.mp3")
@@ -56,7 +58,7 @@ def process_audio_buffer():
 
 # Set the audio parameters
 sample_rate = 48000#16000#
-duration = 1.2  # Duration of each audio callback in seconds
+duration = 0.5  # Duration of each audio callback in seconds
 
 # Start recording audio
 def record():
