@@ -46,11 +46,10 @@ def process_audio_buffer():
     try:
         text = recognizer.recognize_google(audio_source)
         print("Recognized text:", text)
-        if "BMO" not in text:
-            return
-        print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
-        speechify.sound(audio_file)
-        os.remove(f"{audio_file}.mp3")
+        if "BMO" in text:
+            print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
+            speechify.sound(audio_file)
+            os.remove(f"{audio_file}.mp3")
     except sr.UnknownValueError:
         print("Speech recognition could not understand audio")
 
