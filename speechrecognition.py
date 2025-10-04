@@ -7,7 +7,7 @@ from audiolist import get_first_input_device
 from datetime import datetime
 import serial
 import os
-arduino = serial.Serial(port="COM3", baudrate=9600, timeout=1)
+arduino = serial.Serial(port="/dev/ttyACM0", baudrate=9600, timeout=1)
 
 
 audio_buffer = []  # Initialize an empty audio buffer
