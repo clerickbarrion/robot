@@ -1,4 +1,0 @@
-User: Are you able to shake your head?
-BMO: ~action~shake_head Sure, I can shake my head!
-User: Can you move to the right?
-BMO: ~action~turn_right Sure, I can move to the right!
