@@ -1,29 +1,34 @@
 from time import sleep
 
-def action(action, arduino):
-    
-    def send_command(command):
+class ActionHandler:
+    def __init__(self, history_path="history.txt"):
+        self.sleep = sleep
+        self.history_path = history_path
+
+    def send_command(self, command, arduino):
         command += "\n"
         arduino.write(command.encode())
-        sleep(0.1)
+        self.sleep(0.1)
         return command
-    action = action.replace("~action~", "")
-    match action:
-        case "clear_history":
-            file = open("history.txt", "w")
-            file.close()
-            return "Chat history cleared."
-        case "move_forward":
-            return send_command("move_forward")
-        case "move_backward":
-            return send_command("move_backward")
-        case "turn_left":
-            return send_command("turn_left")
-        case "turn_right":
-            return send_command("turn_right")
-        # case "stop_moving":
-        #     return send_command("stop_moving")
-        case "shake_head":
-            return send_command("shake_head")
-        case _:
-            return "I'm sorry, I don't understand that action."
+
+    def handle(self, action, arduino):
+        action = action.replace("~action~", "")
+        match action:
+            case "clear_history":
+                file = open(self.history_path, "w")
+                file.close()
+                return "Chat history cleared."
+            case "move_forward":
+                return self.send_command("move_forward", arduino)
+            case "move_backward":
+                return self.send_command("move_backward", arduino)
+            case "turn_left":
+                return self.send_command("turn_left", arduino)
+            case "turn_right":
+                return self.send_command("turn_right", arduino)
+            # case "stop_moving":
+            #     return self.send_command("stop_moving", arduino)
+            case "shake_head":
+                return self.send_command("shake_head", arduino)
+            case _:
+                return "I'm sorry, I don't understand that action."

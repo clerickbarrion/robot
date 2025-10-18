@@ -1,69 +1,64 @@
+from chatbot import ChatBot
+from speechify import SpeechPlayer
 import sounddevice as sd
 import numpy as np
 import speech_recognition as sr
-import chatbot
-import speechify
 from audiolist import get_first_input_device
 from datetime import datetime
 import serial
 import os
-arduino = serial.Serial(port="/dev/ttyACM0", baudrate=9600, timeout=1)
 
+class SpeechRecognizer:
+    def __init__(self):
+        self.sd = sd
+        self.np = np
+        self.sr = sr
+        self.get_first_input_device = get_first_input_device
+        self.datetime = datetime
+        self.serial = serial
+        self.os = os
+        self.arduino = serial.Serial(port="/dev/ttyACM0", baudrate=9600, timeout=1)
+        self.audio_buffer = []
+        self.audio = True
+        self.sample_rate = 48000
+        self.duration = 0.5
+        self.chatbot = ChatBot()
+        self.speech_player = SpeechPlayer()
 
-audio_buffer = []  # Initialize an empty audio buffer
-audio = True
+    def audio_callback(self, indata, frames, time, status):
+        # Calculate the RMS (Root Mean Square) value
+        rms = self.np.sqrt(self.np.mean(indata ** 2))
+        print(rms)
+        # Define a threshold value to detect audio
+        threshold = 0.03
+        if rms > threshold:
+            print("Audio detected from the application!")
+            audio_data = (indata * 32767).astype(self.np.int16)
+            self.audio_buffer.append(audio_data)
+        else:
+            if len(self.audio_buffer) > 0:
+                audio_data = (indata * 32767).astype(self.np.int16)
+                self.audio_buffer.append(audio_data)
+                self.process_audio_buffer()
 
-def audio_callback(indata, frames, time, status):
-    global audio_buffer
-    
-    # Calculate the RMS (Root Mean Square) value
-    rms = np.sqrt(np.mean(indata ** 2))
-    print(rms)
-    # Define a threshold value to detect audio
-    threshold = 0.05
-    
-    if rms > threshold:
-        print("Audio detected from the application!")
-        
-        audio_data = (indata * 32767).astype(np.int16)
-        audio_buffer.append(audio_data)  # Append new audio data to buffer
-    else:
-        if len(audio_buffer) > 0:
-            audio_data = (indata * 32767).astype(np.int16)
-            audio_buffer.append(audio_data)
-            process_audio_buffer()
+    def process_audio_buffer(self):
+        stacked_audio = self.np.concatenate(self.audio_buffer)
+        recognizer = self.sr.Recognizer()
+        audio_source = self.sr.AudioData(stacked_audio.tobytes(), sample_rate=self.sample_rate, sample_width=2)
+        try:
+            text = recognizer.recognize_google(audio_source)
+            print("Recognized text:", text)
+            self.chatbot.send_message(text, audio=self.audio, arduino=self.arduino)
+        except self.sr.UnknownValueError:
+            print("Speech recognition could not understand audio")
+        self.audio_buffer = []
 
-def process_audio_buffer():
-    global audio_buffer
-    
-    stacked_audio = np.concatenate(audio_buffer)
-    
-    recognizer = sr.Recognizer()
-    audio_source = sr.AudioData(stacked_audio.tobytes(), sample_rate=sample_rate, sample_width=2)
-    
-    audio_file = f"audio/{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    
-    try:
-        text = recognizer.recognize_google(audio_source)
-        print("Recognized text:", text)
-        if "BMO" in text:
-            print(chatbot.send_message(text, audio_file, audio=audio, arduino=arduino))
-            speechify.sound(audio_file)
-            os.remove(f"{audio_file}.mp3")
-    except sr.UnknownValueError:
-        print("Speech recognition could not understand audio")
+    def record(self):
+        with self.sd.InputStream(device=self.get_first_input_device(), channels=1, callback=self.audio_callback,
+                                 samplerate=self.sample_rate, blocksize=int(self.sample_rate * self.duration)):
+            print("Listening for audio...")
+            input("Press Enter to stop...")
 
-    audio_buffer = []
-
-# Set the audio parameters
-sample_rate = 48000#16000#
-duration = 0.5  # Duration of each audio callback in seconds
-
-# Start recording audio
-def record():
-    with sd.InputStream(device=get_first_input_device(), channels=1, callback=audio_callback,
-                        samplerate=sample_rate, blocksize=int(sample_rate * duration)):
-        print("Listening for audio...")
-        input("Press Enter to stop...")
-
-record()
+if __name__ == "__main__":
+    recognizer = SpeechRecognizer()
+    recognizer.record()
