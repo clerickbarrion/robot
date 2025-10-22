@@ -18,7 +18,7 @@ class ChatBot:
         self.history_path = history_path
         self.action_handler = ActionHandler(history_path)
         self.engine = OpenAIEngine(speed=1.1, voice="fable")
-        self.stream = TextToAudioStream(self.engine)
+        self.stream = TextToAudioStream(self.engine, frames_per_buffer=256)
         for path in ["./pictures", "./audio"]:
             if not os.path.exists(path):
                 os.makedirs(path) 

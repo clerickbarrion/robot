@@ -5,6 +5,6 @@ SpeechRecognition
 numpy
 sounddevice
 pyserial
-realtimetts[gtts,openai]
+realtimetts[system,gtts,openai]
 ffmpeg
 mpv
