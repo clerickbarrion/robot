@@ -4,3 +4,5 @@ __pycache__
 audio/*
 !audio/
 playground.py
+pictures/*
+!pictures/

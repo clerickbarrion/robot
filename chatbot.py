@@ -4,6 +4,7 @@ from RealtimeTTS import TextToAudioStream,  GTTSEngine, GTTSVoice, SystemEngine,
 from openai import OpenAI
 from datetime import datetime
 import re
+import pyaudio
 
 class ChatBot:
     def __init__(self, env_path=".env", history_path="history.txt"):
@@ -18,6 +19,9 @@ class ChatBot:
         self.action_handler = ActionHandler(history_path)
         self.engine = OpenAIEngine(speed=1.1, voice="fable")
         self.stream = TextToAudioStream(self.engine)
+        for path in ["./pictures", "./audio"]:
+            if not os.path.exists(path):
+                os.makedirs(path) 
 
     def send_message(self, message, audio=False, arduino=None):
         with open(self.history_path, "r") as file:
@@ -47,6 +51,7 @@ class ChatBot:
                 ~action~turn_right
                 ~action~stop_moving
                 ~action~shake_head
+                ~action~take_picture
                 '''},
                 {"role": "user", "content": message}
             ],
@@ -68,12 +73,12 @@ class ChatBot:
         match = self.re.match(r"(~action~\w+)\s*(.*)", response)
         if match:
             response = [match.group(1), match.group(2)]
-            self.action_handler.handle(response[0], arduino)
-            response = response[1]
+            action_response = self.action_handler.handle(response[0], message, arduino, self.client)
+            response = action_response or response[1]
+            print(response) if action_response else ""
         if audio:
             self.stream.feed(response)
             self.stream.play_async()
-        return response
 
 if __name__ == "__main__":
     import serial
